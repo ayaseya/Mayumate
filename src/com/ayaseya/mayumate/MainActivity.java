@@ -75,9 +75,9 @@ public class MainActivity extends Activity {
 			// リストビューのインスタンスを生成します。
 			listView = (ListView) rootView.findViewById(R.id.listView);
 
-			list.add("1");
-			list.add("2");
-			list.add("3");
+			//			list.add("1");
+			//			list.add("2");
+			//			list.add("3");
 
 			// 文字列を表示させるシンプルなアダプターを用意します。
 			adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
 			listView.setAdapter(adapter);
 
 			// RSSを読み込むためのタスクのインスタンスを取得します。
-			task = new RssTask(getActivity(), getActivity());
+			task = new RssTask(getActivity(),adapter);
 
 			// RSSボタンのリスナーを設定します。
 			rootView.findViewById(R.id.rssBtn).setOnClickListener(new OnClickListener() {
