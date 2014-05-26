@@ -1,21 +1,29 @@
 package com.ayaseya.mayumate;
 
+import static com.ayaseya.mayumate.CommonUtilities.*;
+
+import java.util.ArrayList;
+
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.v(TAG, "/* ********** ********** ********** ********** */");
+
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null) {
@@ -23,6 +31,7 @@ public class MainActivity extends Activity {
 					.add(R.id.container, new PlaceholderFragment())
 					.commit();
 		}
+
 	}
 
 	@Override
@@ -50,6 +59,11 @@ public class MainActivity extends Activity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
+		private ListView listView;
+		private ArrayList<String> list = new ArrayList<String>();
+		private ArrayAdapter<String> adapter;
+		private RssTask task;
+
 		public PlaceholderFragment() {
 		}
 
@@ -57,7 +71,42 @@ public class MainActivity extends Activity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+			// リストビューのインスタンスを生成します。
+			listView = (ListView) rootView.findViewById(R.id.listView);
+
+			list.add("1");
+			list.add("2");
+			list.add("3");
+
+			// 文字列を表示させるシンプルなアダプターを用意します。
+			adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
+			// リストビューにアダプターを設定します。
+			listView.setAdapter(adapter);
+
+			// RSSを読み込むためのタスクのインスタンスを取得します。
+			task = new RssTask(getActivity(), getActivity());
+
+			// RSSボタンのリスナーを設定します。
+			rootView.findViewById(R.id.rssBtn).setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					
+					
+					// RSSを取得するためのタスクを起動します。				
+					task.execute();
+				}
+			});
+
 			return rootView;
+		}
+
+		// 
+		@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+
 		}
 	}
 
