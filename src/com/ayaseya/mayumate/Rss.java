@@ -12,10 +12,10 @@ public class Rss {
 	private String date;
 
 	public Rss() {
-		title = "";
-		description = "";
-		site = "";
-		date = "";
+		title = "記事のタイトル";
+		description = "記事の本文";
+		site = "サイト名";
+		date = "2014/1/1";
 	}
 
 	public String getTitle() {

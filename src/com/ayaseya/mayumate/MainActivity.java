@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -67,6 +68,11 @@ public class MainActivity extends Activity {
 		private ListView listView;
 		private ArrayList<String> list = new ArrayList<String>();
 		private ArrayAdapter<String> adapter;
+
+		private RssAdapter rssAdapter;
+
+		private ArrayList<Rss> rss = new ArrayList<Rss>();
+
 		private RssTask task;
 
 		public PlaceholderFragment() {
@@ -83,12 +89,17 @@ public class MainActivity extends Activity {
 			//			list.add("2");
 			//			list.add("3");
 
+			rss.add(new Rss());
+
 			// 文字列を表示させるシンプルなアダプターを用意します。
-			adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
-			
-			
+			//			adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
+
+			rssAdapter = new RssAdapter(getActivity(), rss);
+
 			// リストビューにアダプターを設定します。
-			listView.setAdapter(adapter);
+			//			listView.setAdapter(adapter);
+
+			listView.setAdapter(rssAdapter);
 
 			// RSSボタンのリスナーを設定します。
 			rootView.findViewById(R.id.rssBtn).setOnClickListener(new OnClickListener() {
@@ -172,33 +183,29 @@ public class MainActivity extends Activity {
 
 	}
 
-	private class RssAdapter extends ArrayAdapter<Rss> {
+	private static class RssAdapter extends ArrayAdapter<Rss> {
+
+		ArrayList<Rss> rss;
 
 		public RssAdapter(Context context, ArrayList<Rss> data) {
-			super(context,
-					R.layout.list_item_layout,
-					data);
+			super(context, R.layout.list_item_layout, R.id.titleView, data);
+			rss = data;
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View row = super.getView(position, convertView, parent);
 
-			//			ImageView img = (ImageView) row.findViewById(R.id.iconView);
-			//
-			//			if (icon.get(position).equals("f01")) {
-			//				img.setImageResource(R.drawable.f01);
-			//			} else if (icon.get(position).equals("f02")) {
-			//				img.setImageResource(R.drawable.f02);
-			//			} else if (icon.get(position).equals("f03")) {
-			//				img.setImageResource(R.drawable.f03);
-			//			} else if (icon.get(position).equals("f04")) {
-			//				img.setImageResource(R.drawable.f04);
-			//			} else if (icon.get(position).equals("f05")) {
-			//				img.setImageResource(R.drawable.f05);
-			//			} else if (icon.get(position).equals("f06")) {
-			//				img.setImageResource(R.drawable.f06);
-			//			}
+			TextView title = (TextView) row.findViewById(R.id.titleView);
+			TextView description = (TextView) row.findViewById(R.id.descriptionView);
+			TextView site = (TextView) row.findViewById(R.id.siteView);
+			TextView dateView = (TextView) row.findViewById(R.id.dateView);
+
+			title.setText(rss.get(position).getTitle());
+			description.setText(rss.get(position).getDescription());
+			site.setText(rss.get(position).getSite());
+			dateView.setText(rss.get(position).getDate());
+			
 
 			return row;
 		}
