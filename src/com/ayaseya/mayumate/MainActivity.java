@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,9 +18,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -66,14 +63,16 @@ public class MainActivity extends Activity {
 	public static class PlaceholderFragment extends Fragment {
 
 		private ListView listView;
-		private ArrayList<String> list = new ArrayList<String>();
-		private ArrayAdapter<String> adapter;
+		//		private ArrayList<String> list = new ArrayList<String>();
+		//		private ArrayAdapter<String> adapter;
 
 		private RssAdapter rssAdapter;
 
 		private ArrayList<Rss> rss = new ArrayList<Rss>();
 
 		private RssTask task;
+
+		private WebViewFragment webViewFragment;
 
 		public PlaceholderFragment() {
 		}
@@ -89,7 +88,7 @@ public class MainActivity extends Activity {
 			//			list.add("2");
 			//			list.add("3");
 
-			rss.add(new Rss());
+			//			rss.add(new Rss());
 
 			// 文字列を表示させるシンプルなアダプターを用意します。
 			//			adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
@@ -110,7 +109,7 @@ public class MainActivity extends Activity {
 					// RSSを取得するURL一覧を配列リソースから読み込みます。
 					String[] url = getResources().getStringArray(R.array.url);
 					// RSSを読み込むためのタスクのインスタンスを取得します。
-					task = new RssTask(getActivity(), adapter);
+					task = new RssTask(getActivity(), rss, rssAdapter);
 
 					// RSSを取得するためのタスクを起動します。				
 					task.execute(url);
@@ -123,19 +122,41 @@ public class MainActivity extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					getFragmentManager().beginTransaction()
-							.replace(R.id.container, new WebViewFragment())
-							.addToBackStack(null)
-							.commit();
+					//					getFragmentManager().beginTransaction()
+					//							.replace(R.id.container, new WebViewFragment())
+					//							.addToBackStack(null)
+					//							.commit();
 
 				}
 			});
 
+			// ListViewをクリックした時のリスナーを設定します。
 			listView.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					Log.v(TAG, "position=" + position);
+					Log.v(TAG, "Link=" + rss.get(position).getLink());
+					rss.get(position).setRead(true);
+					
+					Bundle bundle = new Bundle();
+					bundle.putString("Link", rss.get(position).getLink());
+				
+
+					if (webViewFragment == null) {
+						webViewFragment = new WebViewFragment();
+
+						webViewFragment.setArguments(bundle);
+						getFragmentManager().beginTransaction()
+								.replace(R.id.container, webViewFragment)
+								.addToBackStack(null)
+								.commit();
+					} else {
+						webViewFragment.setArguments(bundle);
+						getFragmentManager().beginTransaction()
+								.replace(R.id.container, webViewFragment)
+								.addToBackStack(null)
+								.commit();
+					}
 
 					// BundleデータにURLを乗せてWebViewのFragmentを表示させる
 					// すでにWebViewのFragmentが存在する場合には
@@ -164,6 +185,8 @@ public class MainActivity extends Activity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 			View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
+			
+			String url = getArguments().getString("Link");
 
 			// WebViewのインスタンスを取得します。
 			webview = (WebView) rootView.findViewById(R.id.webView);
@@ -177,37 +200,8 @@ public class MainActivity extends Activity {
 			webview.getSettings().setBuiltInZoomControls(true);
 
 			// 初期ページを読み込みます。
-			webview.loadUrl("https://www.google.co.jp/");
+			webview.loadUrl(url);
 			return rootView;
-		}
-
-	}
-
-	private static class RssAdapter extends ArrayAdapter<Rss> {
-
-		ArrayList<Rss> rss;
-
-		public RssAdapter(Context context, ArrayList<Rss> data) {
-			super(context, R.layout.list_item_layout, R.id.titleView, data);
-			rss = data;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View row = super.getView(position, convertView, parent);
-
-			TextView title = (TextView) row.findViewById(R.id.titleView);
-			TextView description = (TextView) row.findViewById(R.id.descriptionView);
-			TextView site = (TextView) row.findViewById(R.id.siteView);
-			TextView dateView = (TextView) row.findViewById(R.id.dateView);
-
-			title.setText(rss.get(position).getTitle());
-			description.setText(rss.get(position).getDescription());
-			site.setText(rss.get(position).getSite());
-			dateView.setText(rss.get(position).getDate());
-			
-
-			return row;
 		}
 
 	}

@@ -6,25 +6,26 @@
 
     <TextView
         android:id="@+id/titleView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#00000000"
         android:gravity="center_vertical"
-        android:padding="10dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
         android:text="記事の件名"
         android:textColor="#000000"
         android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/descriptionView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:gravity="center_vertical"
-        android:padding="10dp"
-        android:text="記事の本文"
-        android:textColor="#000000"
-        android:textSize="14sp" />
+<!--     <TextView -->
+<!--         android:id="@+id/descriptionView" -->
+<!--         android:layout_width="wrap_content" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:background="#00000000" -->
+<!--         android:gravity="center_vertical" -->
+<!--         android:padding="10dp" -->
+<!--         android:text="記事の本文" -->
+<!--         android:textColor="#000000" -->
+<!--         android:textSize="14sp" /> -->
 
     <TextView
         android:id="@+id/siteView"
@@ -32,20 +33,18 @@
         android:layout_height="wrap_content"
         android:background="#00000000"
         android:gravity="center_vertical"
-        android:padding="10dp"
         android:text="サイト名"
         android:textColor="#666666"
         android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/dateView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:gravity="center_vertical"
-        android:padding="10dp"
-        android:text="2014/01/01 0:00:00"
-        android:textColor="#666666"
-        android:textSize="12sp" />
+<!--     <TextView -->
+<!--         android:id="@+id/dateView" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:background="#00000000" -->
+<!--         android:gravity="center_vertical" -->
+<!--         android:text="2014/01/01 0:00:00" -->
+<!--         android:textColor="#666666" -->
+<!--         android:textSize="12sp" /> -->
 
 </LinearLayout>

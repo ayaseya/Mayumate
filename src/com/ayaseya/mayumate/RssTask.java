@@ -13,7 +13,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
-import android.widget.ArrayAdapter;
 
 public class RssTask extends AsyncTask<String, Void, String> {
 
@@ -36,15 +35,19 @@ public class RssTask extends AsyncTask<String, Void, String> {
 
 	private Context context;
 	private ProgressDialog loading;
-	private ArrayAdapter<String> adapter;
-	private ArrayList<String> title = new ArrayList<String>();
+	//	private ArrayAdapter<String> adapter;
+	private ArrayList<Rss> rss;
+	private RssAdapter rssAdapter;
+
+	//	private ArrayList<String> title = new ArrayList<String>();
 
 	// コンストラクタ
-	public RssTask(Context context, ArrayAdapter<String> adapter) {
+	public RssTask(Context context, ArrayList<Rss> rss, RssAdapter rssAdapter) {
 		super();
 
 		this.context = context;
-		this.adapter = adapter;
+		this.rss = rss;
+		this.rssAdapter = rssAdapter;
 	}
 
 	@Override
@@ -65,19 +68,80 @@ public class RssTask extends AsyncTask<String, Void, String> {
 				xmlPullParser.setInput(connection.getInputStream(), "UTF-8");
 
 				int eventType;
+				String site = null;
+				String link = null;
+
+				Rss rssParams = null;
 				while ((eventType = xmlPullParser.next()) != XmlPullParser.END_DOCUMENT) {
+
 					if (eventType == XmlPullParser.START_TAG && "title".equals(xmlPullParser.getName())) {
+						xmlPullParser.next();
+						if (site == null) {
+							site = xmlPullParser.getText();
+							Log.v(TAG, "【" + site + "】");
 
-						String tmp = xmlPullParser.nextText();
+						} else {
 
-						title.add(tmp);
+							if (rssParams != null) {
+								rss.add(rssParams);
+							}
 
-						//					Log.v(TAG, tmp);
+							if (!xmlPullParser.getText().equals("渡辺麻友 - Google News")) {
+
+								rssParams = new Rss();
+								rssParams.setSite(site);
+								rssParams.setTitle(xmlPullParser.getText());
+								Log.v(TAG, "> " + xmlPullParser.getText());
+
+							}
+						}
+
+					} else if (eventType == XmlPullParser.START_TAG && "link".equals(xmlPullParser.getName())) {
+						xmlPullParser.next();
+						if (link == null) {
+							link = xmlPullParser.getText();
+							Log.v(TAG, "└" + link);
+						} else {
+
+							if (xmlPullParser.getText() != null) {
+								if (!xmlPullParser.getText()
+										.equals("http://news.google.com/news?ned=us&hl=ja&q=%E6%B8%A1%E8%BE%BA%E9%BA%BB%E5%8F%8B")) {
+
+									if (rssParams != null) {
+
+										rssParams.setLink(xmlPullParser.getText());
+									}
+									Log.v(TAG, xmlPullParser.getText());
+								}
+
+							}
+
+						}
+
+					} else if (eventType == XmlPullParser.START_TAG && "date".equals(xmlPullParser.getName())) {
+						xmlPullParser.next();
+
+						if (xmlPullParser.getText() != null) {
+							if (rssParams != null) {
+								rssParams.setDate(xmlPullParser.getText());
+							}
+							Log.v(TAG, xmlPullParser.getText());
+
+						}
+
+					} else if (eventType == XmlPullParser.START_TAG && "pubDate".equals(xmlPullParser.getName())) {
+						xmlPullParser.next();
+						String str = xmlPullParser.getText();
+						if (rssParams != null) {
+							rssParams.setDate(str);
+
+						}
+						Log.v(TAG, str);
 
 					}
 				}
-			} catch (Exception e) {
 
+			} catch (Exception e) {
 				Log.v(TAG, "Error:" + e);
 
 			}
@@ -103,11 +167,9 @@ public class RssTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 
-		for (int i = 0; i < title.size(); i++) {
-			adapter.add(title.get(i));
+		// ArrayListをソートする
 
-		}
-
+		rssAdapter.notifyDataSetChanged();
 		// 通信中ダイアログを非表示にします。
 		loading.dismiss();
 
