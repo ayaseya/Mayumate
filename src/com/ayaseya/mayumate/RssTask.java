@@ -15,7 +15,7 @@ import android.util.Log;
 import android.util.Xml;
 import android.widget.ArrayAdapter;
 
-public class RssTask extends AsyncTask<Void, Void, String> {
+public class RssTask extends AsyncTask<String, Void, String> {
 
 	/*
 	 * AsyncTask<型1, 型2,型3>
@@ -48,36 +48,42 @@ public class RssTask extends AsyncTask<Void, Void, String> {
 	}
 
 	@Override
-	protected String doInBackground(Void... params) {
+	protected String doInBackground(String... params) {
+		//paramsの配列にはRSS取得先となるURLが一覧で渡されます。
 
-		try {
-			// XmlPullParserのインスタンスを取得します。
-			XmlPullParser xmlPullParser = Xml.newPullParser();
+		for (int i = 0; i < params.length; i++) {
 
-			// RSSの取得先となるURLを設定します。
-			URL url = new URL("http://news.google.com/news?hl=ja&ned=us&ie=UTF-8&oe=UTF-8&output=rss&q=%e6%b8%a1%e8%be%ba%e9%ba%bb%e5%8f%8b");
-			//  URL が参照するリモートオブジェクトへの接続を表す URLConnection オブジェクトを返します。
-			URLConnection connection = url.openConnection();
-			// XMLPullParserにXMLファイル（RSS）のストリームを設定します。
-			xmlPullParser.setInput(connection.getInputStream(), "UTF-8");
+			try {
+				// XmlPullParserのインスタンスを取得します。
+				XmlPullParser xmlPullParser = Xml.newPullParser();
 
-			int eventType;
-			while ((eventType = xmlPullParser.next()) != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_TAG && "title".equals(xmlPullParser.getName())) {
+				// RSSの取得先となるURLを設定します。
+				URL url = new URL(params[i]);
+				//  URL が参照するリモートオブジェクトへの接続を表す URLConnection オブジェクトを返します。
+				URLConnection connection = url.openConnection();
+				// XMLPullParserにXMLファイル（RSS）のストリームを設定します。
+				xmlPullParser.setInput(connection.getInputStream(), "UTF-8");
 
-					String tmp = xmlPullParser.nextText();
+				int eventType;
+				while ((eventType = xmlPullParser.next()) != XmlPullParser.END_DOCUMENT) {
+					if (eventType == XmlPullParser.START_TAG && "title".equals(xmlPullParser.getName())) {
 
-					title.add(tmp);
+						String tmp = xmlPullParser.nextText();
 
-					//					Log.v(TAG, tmp);
+						title.add(tmp);
 
+						//					Log.v(TAG, tmp);
+
+					}
 				}
-			}
-		} catch (Exception e) {
+			} catch (Exception e) {
 
-			Log.v(TAG, "Error:" + e);
+				Log.v(TAG, "Error:" + e);
+
+			}
 
 		}
+
 		return null;
 	}
 

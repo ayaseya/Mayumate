@@ -16,13 +16,20 @@
         android:layout_alignParentTop="true" >
     </ListView>
 
-
+    <Button
+        android:id="@+id/webViewBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="WebView" />
 
     <Button
         android:id="@+id/rssBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/webViewBtn"
+        android:layout_alignLeft="@+id/webViewBtn"
         android:text="RSS" />
 
 </RelativeLayout>
