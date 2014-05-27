@@ -1,17 +1,16 @@
 package com.ayaseya.mayumate;
 
-import static com.ayaseya.mayumate.CommonUtilities.*;
-
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.Xml;
 
 public class RssTask extends AsyncTask<String, Void, String> {
@@ -54,96 +53,89 @@ public class RssTask extends AsyncTask<String, Void, String> {
 	protected String doInBackground(String... params) {
 		//paramsの配列にはRSS取得先となるURLが一覧で渡されます。
 
+		String site = null;
+		String link = null;
+
+		Rss rssParams = null;
+
 		for (int i = 0; i < params.length; i++) {
 
+			// XMLパーサー解析を開始します。
 			try {
 				// XmlPullParserのインスタンスを取得します。
 				XmlPullParser xmlPullParser = Xml.newPullParser();
 
 				// RSSの取得先となるURLを設定します。
 				URL url = new URL(params[i]);
+
 				//  URL が参照するリモートオブジェクトへの接続を表す URLConnection オブジェクトを返します。
 				URLConnection connection = url.openConnection();
+
 				// XMLPullParserにXMLファイル（RSS）のストリームを設定します。
 				xmlPullParser.setInput(connection.getInputStream(), "UTF-8");
 
-				int eventType;
-				String site = null;
-				String link = null;
+				//イベントを取得します。
+				int eventType = xmlPullParser.getEventType();
+				// XMLドキュメントの終端までループします。 
+				while (eventType != XmlPullParser.END_DOCUMENT) {
 
-				Rss rssParams = null;
-				while ((eventType = xmlPullParser.next()) != XmlPullParser.END_DOCUMENT) {
+					String tag = null; //タグ名を取得するための変数です。  
+					switch (eventType) {
+					//ドキュメントの最初  
+					case XmlPullParser.START_DOCUMENT:
+						break;
 
-					if (eventType == XmlPullParser.START_TAG && "title".equals(xmlPullParser.getName())) {
-						xmlPullParser.next();
-						if (site == null) {
-							site = xmlPullParser.getText();
-							Log.v(TAG, "【" + site + "】");
+					//開始タグ時  
+					case XmlPullParser.START_TAG:
+						tag = xmlPullParser.getName();
+						// <item>タグの子要素を取得したいので
+						// <item>タグを見つけたら1記事分の情報を格納するため
+						// rssParamsのインスタンスを取得します。
 
-						} else {
-
-							if (rssParams != null) {
-								rss.add(rssParams);
+						if (rssParams == null) {
+							if (tag.equals("title")) {
+								site = xmlPullParser.nextText();
 							}
+						} 
 
-							if (!xmlPullParser.getText().equals("渡辺麻友 - Google News")) {
-
-								rssParams = new Rss();
-								rssParams.setSite(site);
-								rssParams.setTitle(xmlPullParser.getText());
-								Log.v(TAG, "> " + xmlPullParser.getText());
-
+						if (tag.equals("item")) {
+							rssParams = new Rss();
+						} else if (rssParams != null) {
+							// <item>タグ以降の各種情報を順に格納していきます。
+							if (tag.equals("title")) {
+								rssParams.setTitle(xmlPullParser.nextText());
+							} else if (tag.equals("link")) {
+								rssParams.setLink(xmlPullParser.nextText());
+							} else if (tag.equals("date")) {
+								rssParams.setDate(xmlPullParser.nextText());
+							} else if (tag.equals("pubDate")) {
+								rssParams.setDate(xmlPullParser.nextText());
+							} else if (tag.equals("description")) {
+								rssParams.setDescription(xmlPullParser.nextText());
 							}
 						}
+						break;
 
-					} else if (eventType == XmlPullParser.START_TAG && "link".equals(xmlPullParser.getName())) {
-						xmlPullParser.next();
-						if (link == null) {
-							link = xmlPullParser.getText();
-							Log.v(TAG, "└" + link);
-						} else {
-
-							if (xmlPullParser.getText() != null) {
-								if (!xmlPullParser.getText()
-										.equals("http://news.google.com/news?ned=us&hl=ja&q=%E6%B8%A1%E8%BE%BA%E9%BA%BB%E5%8F%8B")) {
-
-									if (rssParams != null) {
-
-										rssParams.setLink(xmlPullParser.getText());
-									}
-									Log.v(TAG, xmlPullParser.getText());
-								}
-
-							}
-
+					//終了タグ時  
+					case XmlPullParser.END_TAG:
+						// <item>タグが終了したら、1記事分の情報を格納し終えたので  
+						// RSSのArrayListに格納します。  
+						tag = xmlPullParser.getName();
+						if (tag.equals("item")) {
+							rssParams.setSite(site);
+							//Itemタグ終了時に格納。  
+							rss.add(rssParams);
+							rssParams = null;
 						}
-
-					} else if (eventType == XmlPullParser.START_TAG && "date".equals(xmlPullParser.getName())) {
-						xmlPullParser.next();
-
-						if (xmlPullParser.getText() != null) {
-							if (rssParams != null) {
-								rssParams.setDate(xmlPullParser.getText());
-							}
-							Log.v(TAG, xmlPullParser.getText());
-
-						}
-
-					} else if (eventType == XmlPullParser.START_TAG && "pubDate".equals(xmlPullParser.getName())) {
-						xmlPullParser.next();
-						String str = xmlPullParser.getText();
-						if (rssParams != null) {
-							rssParams.setDate(str);
-
-						}
-						Log.v(TAG, str);
-
+						break;
 					}
+					//次のイベントへ遷移させループさせます。
+					eventType = xmlPullParser.next();
 				}
-
-			} catch (Exception e) {
-				Log.v(TAG, "Error:" + e);
-
+			} catch (XmlPullParserException e) {
+				return null;
+			} catch (IOException e) {
+				return null;
 			}
 
 		}

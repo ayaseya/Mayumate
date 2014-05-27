@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -100,36 +99,6 @@ public class MainActivity extends Activity {
 
 			listView.setAdapter(rssAdapter);
 
-			// RSSボタンのリスナーを設定します。
-			rootView.findViewById(R.id.rssBtn).setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-
-					// RSSを取得するURL一覧を配列リソースから読み込みます。
-					String[] url = getResources().getStringArray(R.array.url);
-					// RSSを読み込むためのタスクのインスタンスを取得します。
-					task = new RssTask(getActivity(), rss, rssAdapter);
-
-					// RSSを取得するためのタスクを起動します。				
-					task.execute(url);
-
-				}
-			});
-
-			// WebViewボタンのリスナーを設定します。
-			rootView.findViewById(R.id.webViewBtn).setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					//					getFragmentManager().beginTransaction()
-					//							.replace(R.id.container, new WebViewFragment())
-					//							.addToBackStack(null)
-					//							.commit();
-
-				}
-			});
-
 			// ListViewをクリックした時のリスナーを設定します。
 			listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -137,10 +106,9 @@ public class MainActivity extends Activity {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					Log.v(TAG, "Link=" + rss.get(position).getLink());
 					rss.get(position).setRead(true);
-					
+
 					Bundle bundle = new Bundle();
 					bundle.putString("Link", rss.get(position).getLink());
-				
 
 					if (webViewFragment == null) {
 						webViewFragment = new WebViewFragment();
@@ -158,11 +126,18 @@ public class MainActivity extends Activity {
 								.commit();
 					}
 
-					// BundleデータにURLを乗せてWebViewのFragmentを表示させる
-					// すでにWebViewのFragmentが存在する場合には
-					// showメソッドで前面に表示させた後、URLを読み込ませる←要検証
 				}
 			});
+
+			if (task == null) {
+				// RSSを取得するURL一覧を配列リソースから読み込みます。
+				String[] url = getResources().getStringArray(R.array.url);
+				// RSSを読み込むためのタスクのインスタンスを取得します。
+				task = new RssTask(getActivity(), rss, rssAdapter);
+
+				// RSSを取得するためのタスクを起動します。				
+				task.execute(url);
+			}
 
 			return rootView;
 		}
@@ -172,6 +147,7 @@ public class MainActivity extends Activity {
 			super.onActivityCreated(savedInstanceState);
 
 		}
+
 	}
 
 	public static class WebViewFragment extends Fragment {
@@ -185,7 +161,7 @@ public class MainActivity extends Activity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 			View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
-			
+
 			String url = getArguments().getString("Link");
 
 			// WebViewのインスタンスを取得します。
