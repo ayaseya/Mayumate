@@ -3,11 +3,16 @@
 
     <string-array name="url" formatted="false">
         <item>http://news.google.com/news?hl=ja&amp;ned=us&amp;ie=UTF-8&amp;oe=UTF-8&amp;output=rss&amp;q=%e6%b8%a1%e8%be%ba%e9%ba%bb%e5%8f%8b</item>
- <!-- Google news -->
+        <!-- Google news -->
         <item>http://mayumato.ldblog.jp/index.rdf</item>
- <!-- まゆまと！ | 非公式渡辺麻友応援サイト -->
+        <!-- まゆまと！ | 非公式渡辺麻友応援サイト -->
         <item>http://akb48-matome.blog.jp/index.rdf</item>
- <!-- AKB48まとめんばー -->
+        <!-- AKB48まとめんばー -->
+    </string-array>
+    <string-array name="name">
+        <item>Google news</item>
+        <item>まゆまと！</item>
+        <item>AKB48まとめんばー</item>
     </string-array>
 
 </resources>

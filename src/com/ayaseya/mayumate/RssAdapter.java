@@ -29,7 +29,7 @@ public class RssAdapter extends ArrayAdapter<Rss> {
 
 		title.setText(rss.get(position).getTitle());
 		//		description.setText(rss.get(position).getDescription());
-		site.setText(rss.get(position).getSite());
+		site.setText(rss.get(position).getName());
 		//		dateView.setText(rss.get(position).getDate());
 
 		if (rss.get(position).isRead()) {

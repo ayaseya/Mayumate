@@ -7,10 +7,10 @@ public class Rss {
 	// 記事の本文
 	private String description;
 	// サイト名
-	private String site;
+	private String name;
 	// 日時
 	private String date;
-
+	// 記事へのリンク(URL)
 	private String link;
 
 	// 既読
@@ -19,7 +19,7 @@ public class Rss {
 	public Rss() {
 		title = "記事のタイトル";
 		description = "記事の本文";
-		site = "サイト名";
+		name = "サイト名";
 		date = "2014/1/1";
 		read = false;
 	}
@@ -40,12 +40,12 @@ public class Rss {
 		this.description = description;
 	}
 
-	public String getSite() {
-		return site;
+	public String getName() {
+		return name;
 	}
 
 	public void setSite(String site) {
-		this.site = site;
+		this.name = site;
 	}
 
 	public String getDate() {
