@@ -3,13 +3,20 @@ package com.ayaseya.mayumate;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.http.impl.cookie.DateParseException;
+import org.apache.http.impl.cookie.DateUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Xml;
 
@@ -53,6 +60,16 @@ public class RssTask extends AsyncTask<String, Void, String> {
 	protected String doInBackground(String... params) {
 		//paramsの配列にはRSS取得先となるURLが一覧で渡されます。
 
+		// RSSを取得するブログ名一覧を配列リソースから読み込みます。
+		String[] name = context.getResources().getStringArray(R.array.site);
+
+		// SQLiteHelperのコンストラクターを呼び出します。
+		RssSQLiteOpenHelper dbHelper = new RssSQLiteOpenHelper(context);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+		// Daoクラスのコンストラクターを呼び出します。
+		Dao dao = new Dao(db);
+
 		String site = null;
 		String link = null;
 
@@ -94,9 +111,11 @@ public class RssTask extends AsyncTask<String, Void, String> {
 
 						if (rssParams == null) {
 							if (tag.equals("title")) {
-								site = xmlPullParser.nextText();
+								//								site = xmlPullParser.nextText();
+								site = name[i];
+								xmlPullParser.nextText();
 							}
-						} 
+						}
 
 						if (tag.equals("item")) {
 							rssParams = new Rss();
@@ -107,9 +126,45 @@ public class RssTask extends AsyncTask<String, Void, String> {
 							} else if (tag.equals("link")) {
 								rssParams.setLink(xmlPullParser.nextText());
 							} else if (tag.equals("date")) {
-								rssParams.setDate(xmlPullParser.nextText());
+								/** RSSフィードの日付フォーマットパターン */
+								String pattern[] = { DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.getPattern() };
+
+								// ItemからpubDateを取得してフォーマット
+								String rssDate = xmlPullParser.nextText();
+
+								String formattedDate = "";
+								try {
+									Date date = DateUtils.parseDate(rssDate, pattern);
+									SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+									// フォーマット側のTimeZoneも日本にしておきます
+									sdf.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+									formattedDate = sdf.format(date);
+								} catch (DateParseException e) {
+									e.printStackTrace();
+								}
+								
+								rssParams.setDate(formattedDate);
+
 							} else if (tag.equals("pubDate")) {
-								rssParams.setDate(xmlPullParser.nextText());
+								/** RSSフィードの日付フォーマットパターン */
+								String pattern[] = { DateUtils.PATTERN_RFC1123 };
+
+								// ItemからpubDateを取得してフォーマット
+								String pubdate = xmlPullParser.nextText();
+
+								String formattedPubdate = "";
+								try {
+									Date date = DateUtils.parseDate(pubdate, pattern);
+									SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+									// フォーマット側のTimeZoneも日本にしておきます
+									sdf.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+									formattedPubdate = sdf.format(date);
+								} catch (DateParseException e) {
+									e.printStackTrace();
+								}
+
+								rssParams.setDate(formattedPubdate);
+
 							} else if (tag.equals("description")) {
 								rssParams.setDescription(xmlPullParser.nextText());
 							}
@@ -123,8 +178,11 @@ public class RssTask extends AsyncTask<String, Void, String> {
 						tag = xmlPullParser.getName();
 						if (tag.equals("item")) {
 							rssParams.setSite(site);
-							//Itemタグ終了時に格納。  
-							rss.add(rssParams);
+							//Itemタグ終了時に格納します。  
+							//							rss.add(rssParams);
+
+							dao.insert(rssParams);
+
 							rssParams = null;
 						}
 						break;
@@ -161,7 +219,7 @@ public class RssTask extends AsyncTask<String, Void, String> {
 
 		// ArrayListをソートする
 
-		rssAdapter.notifyDataSetChanged();
+		//		rssAdapter.notifyDataSetChanged();
 		// 通信中ダイアログを非表示にします。
 		loading.dismiss();
 

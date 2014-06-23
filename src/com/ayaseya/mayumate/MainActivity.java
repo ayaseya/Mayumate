@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -25,7 +26,9 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.v(TAG, "/* ********** ********** ********** ********** */");
-
+		
+		requestWindowFeature(Window.FEATURE_NO_TITLE); // タイトルバーを非表示にする
+		
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null) {
@@ -132,6 +135,7 @@ public class MainActivity extends Activity {
 			if (task == null) {
 				// RSSを取得するURL一覧を配列リソースから読み込みます。
 				String[] url = getResources().getStringArray(R.array.url);
+						
 				// RSSを読み込むためのタスクのインスタンスを取得します。
 				task = new RssTask(getActivity(), rss, rssAdapter);
 

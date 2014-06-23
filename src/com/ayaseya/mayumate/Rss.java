@@ -10,19 +10,18 @@ public class Rss {
 	private String site;
 	// 日時
 	private String date;
-
+	// 記事の直リンク(URL)
 	private String link;
-
 	// 既読
 	private boolean read;
 
-	public Rss() {
-		title = "記事のタイトル";
-		description = "記事の本文";
-		site = "サイト名";
-		date = "2014/1/1";
-		read = false;
-	}
+//	public Rss() {
+//		title = "記事のタイトル";
+//		description = "記事の本文";
+//		site = "サイト名";
+//		date = "2014-01-01";
+//		read = false;
+//	}
 
 	public String getTitle() {
 		return title;
