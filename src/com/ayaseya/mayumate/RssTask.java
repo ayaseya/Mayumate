@@ -6,6 +6,7 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -41,11 +42,8 @@ public class RssTask extends AsyncTask<String, Void, String> {
 
 	private Context context;
 	private ProgressDialog loading;
-	//	private ArrayAdapter<String> adapter;
 	private ArrayList<Rss> rss;
 	private RssAdapter rssAdapter;
-
-	//	private ArrayList<String> title = new ArrayList<String>();
 
 	// コンストラクタ
 	public RssTask(Context context, ArrayList<Rss> rss, RssAdapter rssAdapter) {
@@ -142,7 +140,7 @@ public class RssTask extends AsyncTask<String, Void, String> {
 								} catch (DateParseException e) {
 									e.printStackTrace();
 								}
-								
+
 								rssParams.setDate(formattedDate);
 
 							} else if (tag.equals("pubDate")) {
@@ -217,9 +215,21 @@ public class RssTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 
-		// ArrayListをソートする
+		// SQLiteHelperのコンストラクターを呼び出します。
+		RssSQLiteOpenHelper dbHelper = new RssSQLiteOpenHelper(context);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-		//		rssAdapter.notifyDataSetChanged();
+		// Daoクラスのコンストラクターを呼び出します。
+		Dao dao = new Dao(db);
+
+		// リストにすべての情報を格納します。
+		List<Rss> list = dao.findAll();
+
+		for (int i = 0; i < list.size(); i++) {
+			rss.add(list.get(i));
+		}
+
+		rssAdapter.notifyDataSetChanged();
 		// 通信中ダイアログを非表示にします。
 		loading.dismiss();
 

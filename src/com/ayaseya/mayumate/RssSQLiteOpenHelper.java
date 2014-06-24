@@ -12,7 +12,7 @@ public class RssSQLiteOpenHelper extends SQLiteOpenHelper {
 
 	// テーブル作成用SQL文です。
 	private static final String CREATE_TABLE_SQL =
-			"CREATE TABLE " + TABLE_NAME + " ("
+			"CREATE TABLE " + RSS_TABLE_NAME + " ("
 					+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
 					+ COLUMN_TITLE + " TEXT,"
 					+ COLUMN_DESCRIPTION + " TEXT,"
@@ -21,7 +21,7 @@ public class RssSQLiteOpenHelper extends SQLiteOpenHelper {
 					+ COLUMN_LINK + " TEXT"
 					+ ");";
 
-	static final String DROP_TABLE = "DROP TABLE " + TABLE_NAME + ";";
+	static final String DROP_TABLE = "DROP TABLE " + RSS_TABLE_NAME + ";";
 
 	public RssSQLiteOpenHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);

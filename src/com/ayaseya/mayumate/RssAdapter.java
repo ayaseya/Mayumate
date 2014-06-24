@@ -25,19 +25,19 @@ public class RssAdapter extends ArrayAdapter<Rss> {
 		TextView title = (TextView) row.findViewById(R.id.titleView);
 		//		TextView description = (TextView) row.findViewById(R.id.descriptionView);
 		TextView site = (TextView) row.findViewById(R.id.siteView);
-		//		TextView dateView = (TextView) row.findViewById(R.id.dateView);
+		TextView dateView = (TextView) row.findViewById(R.id.dateView);
 
 		title.setText(rss.get(position).getTitle());
 		//		description.setText(rss.get(position).getDescription());
 		site.setText(rss.get(position).getSite());
-		//		dateView.setText(rss.get(position).getDate());
+		dateView.setText(rss.get(position).getDate());
 
 		if (rss.get(position).isRead()) {
 
-			row.setBackgroundColor(Color.rgb(219,112,147));
+			row.setBackgroundColor(Color.rgb(219, 112, 147));
 
-		}else{
-			row.setBackgroundColor(Color.rgb(255,255,255));
+		} else {
+			row.setBackgroundColor(Color.rgb(255, 255, 255));
 		}
 
 		return row;

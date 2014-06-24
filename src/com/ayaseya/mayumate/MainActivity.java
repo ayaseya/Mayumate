@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,8 +66,6 @@ public class MainActivity extends Activity {
 	public static class PlaceholderFragment extends Fragment {
 
 		private ListView listView;
-		//		private ArrayList<String> list = new ArrayList<String>();
-		//		private ArrayAdapter<String> adapter;
 
 		private RssAdapter rssAdapter;
 
@@ -85,21 +84,8 @@ public class MainActivity extends Activity {
 
 			// リストビューのインスタンスを生成します。
 			listView = (ListView) rootView.findViewById(R.id.listView);
-
-			//			list.add("1");
-			//			list.add("2");
-			//			list.add("3");
-
-			//			rss.add(new Rss());
-
-			// 文字列を表示させるシンプルなアダプターを用意します。
-			//			adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
-
+			
 			rssAdapter = new RssAdapter(getActivity(), rss);
-
-			// リストビューにアダプターを設定します。
-			//			listView.setAdapter(adapter);
-
 			listView.setAdapter(rssAdapter);
 
 			// ListViewをクリックした時のリスナーを設定します。
@@ -133,6 +119,18 @@ public class MainActivity extends Activity {
 			});
 
 			if (task == null) {
+				
+				// SQLiteHelperのコンストラクターを呼び出します。
+				RssSQLiteOpenHelper dbHelper = new RssSQLiteOpenHelper(getActivity());
+				SQLiteDatabase db = dbHelper.getWritableDatabase();
+				
+				// Daoクラスのコンストラクターを呼び出します。
+				Dao dao = new Dao(db);
+				
+				dao.deleteTable();
+				
+
+				
 				// RSSを取得するURL一覧を配列リソースから読み込みます。
 				String[] url = getResources().getStringArray(R.array.url);
 						
