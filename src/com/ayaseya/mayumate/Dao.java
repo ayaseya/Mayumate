@@ -113,6 +113,19 @@ public class Dao {
 		return false;
 
 	}
+	public boolean isRss() {
+
+		String sql = "SELECT * FROM rss_tbl;";
+		Cursor cursor = db.rawQuery(sql, null);
+
+		if (cursor.moveToFirst()) {
+			cursor.close();
+			return true;
+		}
+		cursor.close();
+		return false;
+
+	}
 
 	// DELETE処理(1行目を削除します)
 	public long deleteRead() {

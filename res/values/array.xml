@@ -2,17 +2,56 @@
 <resources>
 
     <string-array name="url" formatted="false">
-        <item>http://news.google.com/news?hl=ja&amp;ned=us&amp;ie=UTF-8&amp;oe=UTF-8&amp;output=rss&amp;q=%e6%b8%a1%e8%be%ba%e9%ba%bb%e5%8f%8b</item>
+
         <!-- Google news -->
-        <item>http://mayumato.ldblog.jp/index.rdf</item>
+        <item>http://news.google.com/news?hl=ja&amp;ned=us&amp;ie=UTF-8&amp;oe=UTF-8&amp;output=rss&amp;q=%e6%b8%a1%e8%be%ba%e9%ba%bb%e5%8f%8b</item>
+
         <!-- まゆまと！ | 非公式渡辺麻友応援サイト -->
-        <item>http://akb48-matome.blog.jp/index.rdf</item>
+        <item>http://mayumato.ldblog.jp/index.rdf</item>
+
         <!-- AKB48まとめんばー -->
+        <item>http://akb48-matome.blog.jp/index.rdf</item>
+
+        <!-- 麻友のために -->
+        <item>http://www.mayuyu.jp/index.rdf</item>
+
+        <!-- AKB48タイムズ -->
+        <item>http://akb48taimuzu.livedoor.biz/index.rdf</item>
+
+        <!-- 執拗にAKB -->
+        <item>http://akbmato.doorblog.jp/index.rdf</item>
+
+        <!-- AKB48の業務連絡。 -->
+        <item>http://blog.livedoor.jp/akb_matome_yaruka/index.rdf</item>
+
+        <!-- AKBip! -->
+        <item>http://blog.livedoor.jp/akbip/index.rdf</item>
+
+        <!-- akb(ﾒ・ん・)？ -->
+        <item>http://akbakb0048.doorblog.jp/index.rdf</item>
+
+        <!-- まゆプラネット -->
+        <item>http://www.mayuwatanabe.net/feed/</item>
+
+        <!-- AKBほりっく -->
+        <item>http://blog.livedoor.jp/akbholic/index.rdf</item>
+
+        <!-- AKB48 渡辺麻友エピソードまとめブログ -->
+        <item>http://feedblog.ameba.jp/rss/ameblo/mayuepi/rss20.xml</item>
     </string-array>
     <string-array name="site" formatted="false">
         <item>Google news</item>
         <item>まゆまと！</item>
         <item>AKB48まとめんばー</item>
+        <item>麻友のために</item>
+        <item>AKB48タイムズ</item>
+        <item>執拗にAKB</item>
+        <item>AKB48の業務連絡。</item>
+        <item>AKBip!</item>
+        <item>akb(ﾒ・ん・)？</item>
+        <item>まゆプラネット</item>
+        <item>AKBほりっく</item>
+        <item>渡辺麻友エピソードまとめブログ</item>
     </string-array>
 
 </resources>

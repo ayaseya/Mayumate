@@ -3,11 +3,13 @@ package com.ayaseya.mayumate;
 import static com.ayaseya.mayumate.CommonUtilities.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,9 +26,9 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +136,9 @@ public class MainActivity extends Activity {
 
 			rssAdapter = new RssAdapter(getActivity(), rss, daoRead);
 			listView.setAdapter(rssAdapter);
+			
+			// RSSを取得するURL一覧を配列リソースから読み込みます。
+			url = getResources().getStringArray(R.array.url);
 
 			// ListViewをクリックした時のリスナーを設定します。
 			listView.setOnItemClickListener(new OnItemClickListener() {
@@ -148,6 +153,9 @@ public class MainActivity extends Activity {
 					// クリックしたアイテムが既読か判定します。
 					if (daoRead.isRead(rss.get(position).getTitle()) == false) {
 
+						TextView title = (TextView) view.findViewById(R.id.titleView);
+						title.setTextColor(Color.argb(255, 170, 170, 170));
+
 						// 既読情報をRSSクラスに設定します。
 						//						rss.get(position).setRead(true);
 
@@ -160,47 +168,51 @@ public class MainActivity extends Activity {
 						}
 
 					}
-					
-					
+
 					Uri uri = Uri.parse(rss.get(position).getLink());
-					Intent i = new Intent(Intent.ACTION_VIEW,uri);
+					Intent i = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(i);
 
-/*					// BundleデータとしてURLをWebViewに渡します。
-					Bundle bundle = new Bundle();
-					bundle.putString("Link", rss.get(position).getLink());
+					/*					// BundleデータとしてURLをWebViewに渡します。
+										Bundle bundle = new Bundle();
+										bundle.putString("Link", rss.get(position).getLink());
 
-					if (webViewFragment == null) {
-						webViewFragment = new WebViewFragment();
+										if (webViewFragment == null) {
+											webViewFragment = new WebViewFragment();
 
-						webViewFragment.setArguments(bundle);
-						getFragmentManager().beginTransaction()
-								.replace(R.id.container, webViewFragment)
-								.addToBackStack(null)
-								.commit();
-					} else {
-						webViewFragment.setArguments(bundle);
-						getFragmentManager().beginTransaction()
-								.replace(R.id.container, webViewFragment)
-								.addToBackStack(null)
-								.commit();
-					}*/
+											webViewFragment.setArguments(bundle);
+											getFragmentManager().beginTransaction()
+													.replace(R.id.container, webViewFragment)
+													.addToBackStack(null)
+													.commit();
+										} else {
+											webViewFragment.setArguments(bundle);
+											getFragmentManager().beginTransaction()
+													.replace(R.id.container, webViewFragment)
+													.addToBackStack(null)
+													.commit();
+										}*/
 
 				}
 			});
 
-			if (task == null) {
+			if (daoRss.isRss()==false) {
 
 				daoRss.deleteTable();
-
-				// RSSを取得するURL一覧を配列リソースから読み込みます。
-				url = getResources().getStringArray(R.array.url);
 
 				// RSSを読み込むためのタスクのインスタンスを取得します。
 				task = new RssTask(getActivity(), rss, rssAdapter, daoRss, mSwipeRefreshLayout);
 
 				// RSSを取得するためのタスクを起動します。				
 				task.execute(url);
+			}else{
+				// リストにすべての情報を格納します。
+				List<Rss> list = daoRss.findAll();
+
+				for (int i = 0; i < list.size(); i++) {
+					rss.add(list.get(i));
+				}
+				rssAdapter.notifyDataSetChanged();
 			}
 
 			return rootView;
@@ -227,7 +239,7 @@ public class MainActivity extends Activity {
 			View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
 
 			String url = getArguments().getString("Link");
-			
+
 			// WebViewのインスタンスを取得します。
 			webview = (WebView) rootView.findViewById(R.id.webView);
 
@@ -241,7 +253,7 @@ public class MainActivity extends Activity {
 
 			// 初期ページを読み込みます。
 			webview.loadUrl(url);
-				
+
 			return rootView;
 		}
 

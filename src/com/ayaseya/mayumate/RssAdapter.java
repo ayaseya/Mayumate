@@ -57,7 +57,7 @@ public class RssAdapter extends ArrayAdapter<Rss> {
 			if (daoRead.isRead(rss.get(position).getTitle())) {
 				holder.title.setTextColor(Color.argb(255, 170, 170, 170));
 			} else {
-				holder.title.setTextColor(Color.argb(255, 44, 44, 44));
+				holder.title.setTextColor(Color.argb(255, 255, 20, 147));
 			}
 
 		} else {
@@ -67,7 +67,7 @@ public class RssAdapter extends ArrayAdapter<Rss> {
 			if (daoRead.isRead(rss.get(position).getTitle())) {
 				holder.title.setTextColor(Color.argb(255, 170, 170, 170));
 			} else {
-				holder.title.setTextColor(Color.argb(255, 44, 44, 44));
+				holder.title.setTextColor(Color.argb(255, 255, 105, 180));
 			}
 
 		}
