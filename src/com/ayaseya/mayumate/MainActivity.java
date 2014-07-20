@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +78,12 @@ public class MainActivity extends Activity {
 
 		private WebViewFragment webViewFragment;
 
+		private Dao daoRss;
 		private Dao daoRead;
 
-		private Dao daoRss;
+		private SwipeRefreshLayout mSwipeRefreshLayout;
+
+		private String[] url;
 
 		public PlaceholderFragment() {
 		}
@@ -85,6 +91,27 @@ public class MainActivity extends Activity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+			// SwipeRefreshLayoutの設定
+			mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh);
+			mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+
+				@Override
+				public void onRefresh() {
+
+					rssAdapter.clear();
+
+					daoRss.deleteTable();
+					// RSSを読み込むためのタスクのインスタンスを取得します。
+					task = new RssTask(getActivity(), rss, rssAdapter, daoRss, mSwipeRefreshLayout);
+
+					// RSSを取得するためのタスクを起動します。				
+					task.execute(url);
+
+				}
+			});
+			mSwipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright, android.R.color.holo_blue_light, android.R.color.holo_blue_dark,
+					android.R.color.holo_blue_light);
 
 			// 既読情報を管理するSQLiteHelperクラスのコンストラクターを呼び出します。
 			ReadSQLiteOpenHelper dbHelperRead = new ReadSQLiteOpenHelper(getActivity());
@@ -157,10 +184,10 @@ public class MainActivity extends Activity {
 				daoRss.deleteTable();
 
 				// RSSを取得するURL一覧を配列リソースから読み込みます。
-				String[] url = getResources().getStringArray(R.array.url);
+				url = getResources().getStringArray(R.array.url);
 
 				// RSSを読み込むためのタスクのインスタンスを取得します。
-				task = new RssTask(getActivity(), rss, rssAdapter, daoRss);
+				task = new RssTask(getActivity(), rss, rssAdapter, daoRss, mSwipeRefreshLayout);
 
 				// RSSを取得するためのタスクを起動します。				
 				task.execute(url);

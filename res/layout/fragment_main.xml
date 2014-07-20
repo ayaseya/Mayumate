@@ -4,28 +4,34 @@
     android:layout_height="match_parent"
     tools:context="com.ayaseya.mayumate.MainActivity$PlaceholderFragment" >
 
-    <ListView
-        android:id="@+id/listView"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/rssBtn"
-        android:layout_alignParentTop="true" >
-    </ListView>
+        android:layout_height="match_parent" >
 
-<!--     <Button -->
-<!--         android:id="@+id/webViewBtn" -->
-<!--         android:layout_width="match_parent" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:layout_alignParentBottom="true" -->
-<!--         android:layout_centerHorizontal="true" -->
-<!--         android:text="WebView" /> -->
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true" >
+        </ListView>
 
-<!--     <Button -->
-<!--         android:id="@+id/rssBtn" -->
-<!--         android:layout_width="match_parent" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:layout_above="@+id/webViewBtn" -->
-<!--         android:layout_alignLeft="@+id/webViewBtn" -->
-<!--         android:text="RSS" /> -->
+        <!-- <Button -->
+        <!-- android:id="@+id/webViewBtn" -->
+        <!-- android:layout_width="match_parent" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentBottom="true" -->
+        <!-- android:layout_centerHorizontal="true" -->
+        <!-- android:text="WebView" /> -->
+
+
+        <!-- <Button -->
+        <!-- android:id="@+id/rssBtn" -->
+        <!-- android:layout_width="match_parent" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_above="@+id/webViewBtn" -->
+        <!-- android:layout_alignLeft="@+id/webViewBtn" -->
+        <!-- android:text="RSS" /> -->
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

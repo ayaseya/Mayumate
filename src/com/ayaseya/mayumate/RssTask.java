@@ -18,6 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Xml;
 
 public class RssTask extends AsyncTask<String, Void, String> {
@@ -44,15 +45,18 @@ public class RssTask extends AsyncTask<String, Void, String> {
 	private ArrayList<Rss> rss;
 	private RssAdapter rssAdapter;
 	private Dao daoRss;
-	
+	private SwipeRefreshLayout mSwipeRefreshLayout;
+
 	// コンストラクタ
-	public RssTask(Context context, ArrayList<Rss> rss, RssAdapter rssAdapter, Dao daoRss) {
+	public RssTask(Context context, ArrayList<Rss> rss, RssAdapter rssAdapter, Dao daoRss, SwipeRefreshLayout mSwipeRefreshLayout) {
 		super();
 
 		this.context = context;
 		this.rss = rss;
 		this.rssAdapter = rssAdapter;
 		this.daoRss = daoRss;
+
+		this.mSwipeRefreshLayout = mSwipeRefreshLayout;
 	}
 
 	@Override
@@ -219,6 +223,7 @@ public class RssTask extends AsyncTask<String, Void, String> {
 		rssAdapter.notifyDataSetChanged();
 		// 通信中ダイアログを非表示にします。
 		loading.dismiss();
+		mSwipeRefreshLayout.setRefreshing(false);
 
 	}
 }
