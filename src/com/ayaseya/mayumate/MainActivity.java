@@ -6,7 +6,9 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -136,6 +138,9 @@ public class MainActivity extends Activity {
 			// ListViewをクリックした時のリスナーを設定します。
 			listView.setOnItemClickListener(new OnItemClickListener() {
 
+				/* (非 Javadoc)
+				 * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView, android.view.View, int, long)
+				 */
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					//					Log.v(TAG, "Link=" + rss.get(position).getLink());
@@ -155,8 +160,13 @@ public class MainActivity extends Activity {
 						}
 
 					}
+					
+					
+					Uri uri = Uri.parse(rss.get(position).getLink());
+					Intent i = new Intent(Intent.ACTION_VIEW,uri);
+					startActivity(i);
 
-					// BundleデータとしてURLをWebViewに渡します。
+/*					// BundleデータとしてURLをWebViewに渡します。
 					Bundle bundle = new Bundle();
 					bundle.putString("Link", rss.get(position).getLink());
 
@@ -174,7 +184,7 @@ public class MainActivity extends Activity {
 								.replace(R.id.container, webViewFragment)
 								.addToBackStack(null)
 								.commit();
-					}
+					}*/
 
 				}
 			});
@@ -217,7 +227,7 @@ public class MainActivity extends Activity {
 			View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
 
 			String url = getArguments().getString("Link");
-
+			
 			// WebViewのインスタンスを取得します。
 			webview = (WebView) rootView.findViewById(R.id.webView);
 
@@ -231,6 +241,7 @@ public class MainActivity extends Activity {
 
 			// 初期ページを読み込みます。
 			webview.loadUrl(url);
+				
 			return rootView;
 		}
 

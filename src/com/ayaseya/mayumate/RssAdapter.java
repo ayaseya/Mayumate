@@ -47,10 +47,29 @@ public class RssAdapter extends ArrayAdapter<Rss> {
 		holder.site.setText(rss.get(position).getSite());
 		holder.date.setText(rss.get(position).getDate());
 
-		if (daoRead.isRead(rss.get(position).getTitle())) {
-			row.setBackgroundColor(Color.rgb(219, 112, 147));
+		holder.title.setText(rss.get(position).getTitle());
+		holder.site.setText(rss.get(position).getSite());
+		holder.date.setText(rss.get(position).getDate());
+
+		if (position % 2 == 0) {
+
+			row.setBackgroundColor(Color.argb(255, 240, 240, 240));
+			if (daoRead.isRead(rss.get(position).getTitle())) {
+				holder.title.setTextColor(Color.argb(255, 170, 170, 170));
+			} else {
+				holder.title.setTextColor(Color.argb(255, 44, 44, 44));
+			}
+
 		} else {
-			row.setBackgroundColor(Color.rgb(255, 255, 255));
+
+			row.setBackgroundColor(Color.argb(128, 255, 255, 255));
+
+			if (daoRead.isRead(rss.get(position).getTitle())) {
+				holder.title.setTextColor(Color.argb(255, 170, 170, 170));
+			} else {
+				holder.title.setTextColor(Color.argb(255, 44, 44, 44));
+			}
+
 		}
 
 		return row;
