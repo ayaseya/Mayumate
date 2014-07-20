@@ -17,7 +17,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Xml;
 
@@ -44,14 +43,16 @@ public class RssTask extends AsyncTask<String, Void, String> {
 	private ProgressDialog loading;
 	private ArrayList<Rss> rss;
 	private RssAdapter rssAdapter;
-
+	private Dao daoRss;
+	
 	// コンストラクタ
-	public RssTask(Context context, ArrayList<Rss> rss, RssAdapter rssAdapter) {
+	public RssTask(Context context, ArrayList<Rss> rss, RssAdapter rssAdapter, Dao daoRss) {
 		super();
 
 		this.context = context;
 		this.rss = rss;
 		this.rssAdapter = rssAdapter;
+		this.daoRss = daoRss;
 	}
 
 	@Override
@@ -60,13 +61,6 @@ public class RssTask extends AsyncTask<String, Void, String> {
 
 		// RSSを取得するブログ名一覧を配列リソースから読み込みます。
 		String[] name = context.getResources().getStringArray(R.array.site);
-
-		// SQLiteHelperのコンストラクターを呼び出します。
-		RssSQLiteOpenHelper dbHelper = new RssSQLiteOpenHelper(context);
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-		// Daoクラスのコンストラクターを呼び出します。
-		Dao dao = new Dao(db);
 
 		String site = null;
 		String link = null;
@@ -179,7 +173,7 @@ public class RssTask extends AsyncTask<String, Void, String> {
 							//Itemタグ終了時に格納します。  
 							//							rss.add(rssParams);
 
-							dao.insert(rssParams);
+							daoRss.insertRss(rssParams);
 
 							rssParams = null;
 						}
@@ -215,15 +209,8 @@ public class RssTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 
-		// SQLiteHelperのコンストラクターを呼び出します。
-		RssSQLiteOpenHelper dbHelper = new RssSQLiteOpenHelper(context);
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-		// Daoクラスのコンストラクターを呼び出します。
-		Dao dao = new Dao(db);
-
 		// リストにすべての情報を格納します。
-		List<Rss> list = dao.findAll();
+		List<Rss> list = daoRss.findAll();
 
 		for (int i = 0; i < list.size(); i++) {
 			rss.add(list.get(i));

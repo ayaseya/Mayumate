@@ -13,7 +13,7 @@ public class Rss {
 	// 記事の直リンク(URL)
 	private String link;
 	// 既読
-	private boolean read;
+//	private boolean read;
 
 //	public Rss() {
 //		title = "記事のタイトル";
@@ -63,12 +63,12 @@ public class Rss {
 		this.link = link;
 	}
 
-	public boolean isRead() {
-		return read;
-	}
-
-	public void setRead(boolean read) {
-		this.read = read;
-	}
+//	public boolean isRead() {
+//		return read;
+//	}
+//
+//	public void setRead(boolean read) {
+//		this.read = read;
+//	}
 
 }

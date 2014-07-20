@@ -27,9 +27,9 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.v(TAG, "/* ********** ********** ********** ********** */");
-		
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE); // タイトルバーを非表示にする
-		
+
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null) {
@@ -75,6 +75,10 @@ public class MainActivity extends Activity {
 
 		private WebViewFragment webViewFragment;
 
+		private Dao daoRead;
+
+		private Dao daoRss;
+
 		public PlaceholderFragment() {
 		}
 
@@ -82,10 +86,24 @@ public class MainActivity extends Activity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+			// 既読情報を管理するSQLiteHelperクラスのコンストラクターを呼び出します。
+			ReadSQLiteOpenHelper dbHelperRead = new ReadSQLiteOpenHelper(getActivity());
+			SQLiteDatabase dbRead = dbHelperRead.getWritableDatabase();
+
+			// Daoクラスのコンストラクターを呼び出します。
+			daoRead = new Dao(dbRead);
+
+			// 取得したRssを管理するSQLiteHelperクラスのコンストラクターを呼び出します。
+			RssSQLiteOpenHelper dbHelperRss = new RssSQLiteOpenHelper(getActivity());
+			SQLiteDatabase dbRss = dbHelperRss.getWritableDatabase();
+
+			// Daoクラスのコンストラクターを呼び出します。
+			daoRss = new Dao(dbRss);
+
 			// リストビューのインスタンスを生成します。
 			listView = (ListView) rootView.findViewById(R.id.listView);
-			
-			rssAdapter = new RssAdapter(getActivity(), rss);
+
+			rssAdapter = new RssAdapter(getActivity(), rss, daoRead);
 			listView.setAdapter(rssAdapter);
 
 			// ListViewをクリックした時のリスナーを設定します。
@@ -93,9 +111,25 @@ public class MainActivity extends Activity {
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					Log.v(TAG, "Link=" + rss.get(position).getLink());
-					rss.get(position).setRead(true);
+					//					Log.v(TAG, "Link=" + rss.get(position).getLink());
 
+					// クリックしたアイテムが既読か判定します。
+					if (daoRead.isRead(rss.get(position).getTitle()) == false) {
+
+						// 既読情報をRSSクラスに設定します。
+						//						rss.get(position).setRead(true);
+
+						// データベースの履歴が100件以上なら一番古い情報を削除して追加します。
+						if (daoRead.count() >= 100) {
+							daoRead.deleteRead();
+							daoRead.insertRead(rss.get(position));
+						} else {
+							daoRead.insertRead(rss.get(position));
+						}
+
+					}
+
+					// BundleデータとしてURLをWebViewに渡します。
 					Bundle bundle = new Bundle();
 					bundle.putString("Link", rss.get(position).getLink());
 
@@ -119,23 +153,14 @@ public class MainActivity extends Activity {
 			});
 
 			if (task == null) {
-				
-				// SQLiteHelperのコンストラクターを呼び出します。
-				RssSQLiteOpenHelper dbHelper = new RssSQLiteOpenHelper(getActivity());
-				SQLiteDatabase db = dbHelper.getWritableDatabase();
-				
-				// Daoクラスのコンストラクターを呼び出します。
-				Dao dao = new Dao(db);
-				
-				dao.deleteTable();
-				
 
-				
+				daoRss.deleteTable();
+
 				// RSSを取得するURL一覧を配列リソースから読み込みます。
 				String[] url = getResources().getStringArray(R.array.url);
-						
+
 				// RSSを読み込むためのタスクのインスタンスを取得します。
-				task = new RssTask(getActivity(), rss, rssAdapter);
+				task = new RssTask(getActivity(), rss, rssAdapter, daoRss);
 
 				// RSSを取得するためのタスクを起動します。				
 				task.execute(url);

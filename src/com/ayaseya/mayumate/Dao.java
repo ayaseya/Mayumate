@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 public class Dao {
 
 	public static final String RSS_TABLE_NAME = "rss_tbl";
+	public static final String READ_TABLE_NAME = "read_tbl";
 
 	public static final String COLUMN_ID = "_id";//
 	public static final String COLUMN_TITLE = "title";//
@@ -41,7 +42,7 @@ public class Dao {
 				"title LIKE '%渡辺麻友%' or " +
 				"description LIKE '%渡辺麻友%' " +
 				"ORDER BY date DESC;";
-		
+
 		// 第一引数SQL文、第二引数はSQL文内に埋め込まれた「?」にはめ込むString配列です。
 		Cursor cursor = db.rawQuery(sql, null);
 
@@ -62,7 +63,7 @@ public class Dao {
 	}
 
 	// INSERT処理
-	public long insert(Rss rss) {
+	public long insertRss(Rss rss) {
 		// ContentValuesはカラム名をキーとして、値を保存するクラスです。
 		ContentValues values = new ContentValues();
 
@@ -75,11 +76,21 @@ public class Dao {
 		return db.insert(RSS_TABLE_NAME, null, values);
 	}
 
+	// INSERT処理(既読情報)
+	public long insertRead(Rss rss) {
+		// ContentValuesはカラム名をキーとして、値を保存するクラスです。
+		ContentValues values = new ContentValues();
+
+		values.put(COLUMN_TITLE, rss.getTitle());
+
+		return db.insert(READ_TABLE_NAME, null, values);
+	}
+
 	// COUNT処理
 	public int count() {
 
 		// テーブルの全行を取得します。
-		String sql = "SELECT * FROM rss_tbl;";
+		String sql = "SELECT * FROM read_tbl;";
 
 		// 第一引数SQL文、第二引数はSQL文内に埋め込まれた「?」にはめ込むString配列です。
 		Cursor cursor = db.rawQuery(sql, null);
@@ -89,11 +100,25 @@ public class Dao {
 		return result;
 	}
 
+	public boolean isRead(String title) {
+
+		String sql = "SELECT * FROM read_tbl WHERE title ='" + title + "';";
+		Cursor cursor = db.rawQuery(sql, null);
+
+		if (cursor.moveToFirst()) {
+			cursor.close();
+			return true;
+		}
+		cursor.close();
+		return false;
+
+	}
+
 	// DELETE処理(1行目を削除します)
-	public long delete() {
+	public long deleteRead() {
 
 		// LIMIT句で1行目の_idを取得します。
-		String sql = "SELECT _id FROM rss_tbl LIMIT 1;";
+		String sql = "SELECT _id FROM read_tbl LIMIT 1;";
 
 		// 第一引数SQL文、第二引数はSQL文内に埋め込まれた「?」にはめ込むString配列です。
 		Cursor cursor = db.rawQuery(sql, null);
@@ -108,7 +133,7 @@ public class Dao {
 		cursor.close();
 
 		// _idに該当する行を削除します。
-		return db.delete(RSS_TABLE_NAME, " _id = '" + _id + "'", null);
+		return db.delete(READ_TABLE_NAME, " _id = '" + _id + "'", null);
 	}
 
 	// DELETE処理(全行を削除します)
