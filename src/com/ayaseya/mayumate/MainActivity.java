@@ -28,6 +28,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 public class MainActivity extends Activity {
 
 	@Override
@@ -96,6 +100,12 @@ public class MainActivity extends Activity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+			// AdView をリソースとしてルックアップしてリクエストを読み込む
+		    AdView adView = (AdView)rootView.findViewById(R.id.adView);
+		    AdRequest adRequest = new AdRequest.Builder().build();
+		    adView.loadAd(adRequest);
+			
+			
 			// SwipeRefreshLayoutの設定
 			mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh);
 			mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
@@ -224,6 +234,18 @@ public class MainActivity extends Activity {
 
 		}
 
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance(this).activityStart(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance(this).activityStop(this);
 	}
 
 	public static class WebViewFragment extends Fragment {
